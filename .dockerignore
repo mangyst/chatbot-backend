@@ -1,0 +1,23 @@
+# Файлы и папки Git
+.git
+.gitignore
+
+# Виртуальные окружения
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+
+# Локальные конфигурации
+*.env
+*.log
+*.sqlite3
+
+# Сборки, IDE и системные файлы
+*.egg-info
+dist/
+build/
+.DS_Store
+.idea/
+.vscode/
