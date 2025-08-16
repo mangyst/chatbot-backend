@@ -20,5 +20,6 @@ ALGORITHM = os.getenv('ALGORITHM')
 # Адрес фронта
 ADDRESS_FRONT = os.getenv('ADDRESS_FRONT')
 # GOOGLE_CLIENT_ID
-GOOGLE_CLIENT_ID= os.getenv('GOOGLE_CLIENT_ID')
-
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+# Ключ для контейнера
+HEALTH_SECRET_KEY = os.getenv('HEALTH_SECRET_KEY')

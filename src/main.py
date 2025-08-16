@@ -12,7 +12,7 @@ from src.services.service import (get_user_by_google_id_service, insert_user_ser
 from src.models.models import DialogSchema, DialogNameSchema, UserDialogMessage, DialogSchemaRename
 from src.core.security import get_current_user, create_access_token
 from src.utils.utils import get_logger
-from src.core.config import ADDRESS_FRONT, GOOGLE_CLIENT_ID
+from src.core.config import ADDRESS_FRONT, GOOGLE_CLIENT_ID, HEALTH_SECRET_KEY
 
 app = FastAPI()
 logger = get_logger(__name__)
@@ -140,6 +140,14 @@ async def get_dialogs(dialog_id: int, user_id: int = Depends(get_current_user)):
     if result.get('success'):
         return {'server': 'ok', 'dialogs': result.get('service_message')}
     raise HTTPException(status_code=500, detail='Ошибка при обновление диалога')
+
+
+@app.get("/health")
+async def health(request: Request):
+    key = request.headers.get("X-Health-Key")
+    if key != HEALTH_SECRET_KEY:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    return JSONResponse({"status": "ok"})
 
 
 if __name__ == "__main__":
