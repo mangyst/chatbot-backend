@@ -1,32 +1,36 @@
 from src.utils.utils import get_logger
 from src.core.config import URL_AI, API_KEY_AI
+import asyncio
 
 
-async def send_ai(dialog_id: int, text_message: str) -> bool | dict:
+async def send_ai(dialog_id: int, text_message: str) -> dict:
+    '''
     logger = get_logger(__name__)
-    headers = {
-        'accept': 'application/json',
-        'Content-Type': 'application/json',
-    }
+    async with aiohttp.ClientSession() as session:
+        try:
+            headers = {
+                'accept': 'application/json',
+                'Content-Type': 'application/json',
+                'api_key': API_KEY_AI,
+            }
+            json_data = {
+                'dialog_id': dialog_id,
+                'user_message': text_message
+            }
+            async with session.post(URL_AI, headers=headers, json=json_data) as response:
+                text = await response.text()
+                logger.info(f"AI ответил. Статус: {response.status}, тело: {text}")
 
-    json_data = {
-        'dialog_id': dialog_id,
-        'user_message': text_message
-    }
-
-    # async with aiohttp.ClientSession() as session:
-    #     try:
-    #         async with session.post(url, headers=headers, json=json_data) as response:
-    #             if response.status == 200:
-    #                 logger.info(f"Запрос на AI успешно отправлен. Пользователь {user_id}")
-    #                 return await response.text() # НАСЧЕТ ТЕКСТ ПОДУМАЙ ТАМ ИДЕТ СЛОВАРЬ {1: 'answer_text_ai'}
-    #             else:
-    #                 logger.warning(f"AI вернул статус {response.status} для пользователя {user_id}")
-    #                 return False
-    #     except Exception as e:
-    #         logger.error(f"Запрос на AI не отправлен. Пользователь {user_id}: {e}")
-    #         return False
-    return {dialog_id: 'Дороги. Дороги в Эквадоре практически идеальные, хотя населенные пункты выглядят очень бедно. На дорогах много интересных машин, например очень много грузовиков - древних Фордов, которые я никогда раньше не видел.'
-                       ' А еще несколько раз на глаза попадались старенькие Жигули :) А еще если кого-то обгоняешь и есть встречная машина, она обязательно включает фары. На больших машинах - грузовиках и автобусах, обязательно красуется местный тюнинг:'
-                       ' машины разукрашенные, либо в наклейках, и обязательно везде огромное множество светодиодов, как будто новогодние елки едут и переливаются всеми цветами.'
-                       'Судно. На первый взгляд судно неплохое, в относительно хорошем состоянии, хотя и 92 года постройки. Экипаж 19 человек - 11 русских и 8 филиппинцев, включая повара. Говорят, периодически становится тоскливо от егошних кулинарных изысков. Филиппинцы здесь рядовой состав, за ними постоянно нужно следить чтобы не натворили чего, среди них только один матрос по-настоящему ответственный и с руками из нужного места, все понимает с полуслова. Остальные - типичные Равшаны да Джамшуты. А еще один из них - гомосек О___о, в добавок к этому он опасный человек, в том плане, что легко впадает в состояние ступора и отключает мозг: был случай как он закрыл одного матроса в трюме, тот орал и тарабанил внутри, это заметил боцман, начал орать на этого персонажа, который, в свою очередь испуганно выпучив глаза, трясущимися руками продолжал закручивать барашки. В итоге боцман его отодвинул и выпустил матроса из трюма. Общение на английском языке, но из-за акцента не всегда с первого раз понятно что филиппинцы говорят, особенно по рации. Напимер, говорит он тебе: Бикарпуль! Бикарпуль! А потом, когда уже поздно, выясняется что это было "Be careful!"'}
+                if response.status == 200:
+                    return text
+                else:
+                    logger.warning(f"AI вернул ошибку {response.status}. Диалог {dialog_id}")
+                    return None
+        except aiohttp.ClientConnectionError as e:
+            logger.error(f"Ошибка соединения с AI. Диалог {dialog_id}: {e}")
+            return None
+        except Exception as e:
+            logger.error(f"Неизвестная ошибка при отправке запроса к AI. Диалог {dialog_id}: {e}")
+            return None
+    '''
+    return {dialog_id: 'answer_ai (AI agent is not connected yet.)'}

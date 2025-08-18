@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  backend:
+    image: chatbot-backend:latest
+    container_name: chatbot-backend
+    restart: always
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health", "-H", "X-Health-Key: ${HEALTH_SECRET_KEY}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  frontend:
+    image: chatbot-frontend:latest
+    container_name: chatbot-frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./frontend/.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/index.html"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  nginx:
+    image: chatbot-nginx:latest
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt/live/deepbottuan.duckdns.org/fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
+      - /etc/letsencrypt/live/deepbottuan.duckdns.org/privkey.pem:/etc/ssl/private/privkey.pem:ro
+    depends_on:
+      - frontend
+      - backend

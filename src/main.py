@@ -54,7 +54,7 @@ async def create_users(request: Request, response: Response):
         response.set_cookie(
             key="access_token",
             value=session_token,
-            httponly=True,
+            httponly=False,
             max_age=60 * 60 * 24,
             secure=True,
             samesite="Lax"

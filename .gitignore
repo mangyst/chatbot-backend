@@ -3,6 +3,7 @@ venv/
 env/
 .venv/
 .env
+generator_key.py
 
 # Конфиги IDE
 .idea/
