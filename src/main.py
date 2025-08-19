@@ -12,7 +12,7 @@ from src.services.service import (get_user_by_google_id_service, insert_user_ser
 from src.models.models import DialogSchema, DialogNameSchema, UserDialogMessage, DialogSchemaRename
 from src.core.security import get_current_user, create_access_token
 from src.utils.utils import get_logger
-from src.core.config import ADDRESS_FRONT, GOOGLE_CLIENT_ID, HEALTH_SECRET_KEY
+from src.core.config import ADDRESS_FRONT, GOOGLE_CLIENT_ID, HEALTH_SECRET_KEY, SECURE_HTTP_HTTPS
 
 app = FastAPI()
 logger = get_logger(__name__)
@@ -56,7 +56,7 @@ async def create_users(request: Request, response: Response):
             value=session_token,
             httponly=False,
             max_age=60 * 60 * 24,
-            secure=True,
+            secure=SECURE_HTTP_HTTPS,
             samesite="Lax"
         )
         return {

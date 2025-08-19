@@ -23,3 +23,5 @@ ADDRESS_FRONT = os.getenv('ADDRESS_FRONT')
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 # Ключ для контейнера
 HEALTH_SECRET_KEY = os.getenv('HEALTH_SECRET_KEY')
+# Передача cookies по http или https для перехода на локальные рельсы/серверные
+SECURE_HTTP_HTTPS = os.getenv('SECURE_HTTP_HTTPS') == 'True'
