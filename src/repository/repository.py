@@ -279,3 +279,47 @@ class Database:
             except SQLAlchemyError as e:
                 self.logger.error(f"Ошибка получения флага для чата {dialog_id} пользователя {user_id}: {e}")
                 return None
+
+    async def read_ai_message(self, user_id: int, dialog_id: int) -> bool | dict:
+        query = text("""
+            SELECT content FROM messages
+            WHERE dialog_id = :dialog_id AND user_id = :user_id
+            ORDER BY created_at DESC
+            LIMIT 1
+           """)
+        async with self.async_session() as session:
+            try:
+                result = await session.execute(query, {
+                    'user_id': user_id,
+                    'dialog_id': dialog_id
+                })
+                content = result.scalar_one_or_none()
+                if content is None:
+                    self.logger.warning(f"Последние сообщение: {user_id} в диалоге: {dialog_id} не найдено")
+                    return False
+                self.logger.info(f"Пользователь {user_id} получил последнее сообщение")
+                return {'content': content}
+            except SQLAlchemyError as e:
+                self.logger.error(f"Ошибка получения последнего сообщения для чата {dialog_id} пользователя {user_id}: {e}")
+                return False
+
+    async def read_user_message(self) -> bool | list:
+        query = text("""
+            SELECT messages.user_id, messages.dialog_id, messages.content FROM messages
+            JOIN dialogs ON messages.dialog_id = dialogs.dialog_id
+            WHERE dialogs.status_flag = true AND messages.user_id <> 1
+              """)
+        async with self.async_session() as session:
+            try:
+                result = await session.execute(query)
+                rows = result.mappings().all()
+                content_messages = [dict(row) for row in rows]
+                self.logger.info(f"AI:получил диалоги")
+                return content_messages
+            except SQLAlchemyError as e:
+                self.logger.error(f"Ошибка AI не получила диалоги")
+                return False
+
+    # Проверка на сообщения
+    async def check_messages(self, user_id: int, dialog_id: int):
+        ...

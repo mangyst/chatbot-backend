@@ -8,11 +8,12 @@ from fastapi.responses import JSONResponse
 from src.services.service import (get_user_by_google_id_service, insert_user_service, init_user_dialog_service,
                                   delete_user_dialog_service, get_user_dialogs_service,
                                   send_message_ai_service, get_context_dialog_service, get_context_user_service,
-                                  update_user_name_chat_service, get_ai_response_flag_service)
-from src.models.models import DialogSchema, DialogNameSchema, UserDialogMessage, DialogSchemaRename
+                                  update_user_name_chat_service, get_ai_response_flag_service,
+                                  get_message_users_service, send_message_user_service)
+from src.models.models import DialogSchema, DialogNameSchema, UserDialogMessage, DialogSchemaRename, DialogSchemaAIsend
 from src.core.security import get_current_user, create_access_token
 from src.utils.utils import get_logger
-from src.core.config import ADDRESS_FRONT, GOOGLE_CLIENT_ID, HEALTH_SECRET_KEY, SECURE_HTTP_HTTPS
+from src.core.config import ADDRESS_FRONT, GOOGLE_CLIENT_ID, HEALTH_SECRET_KEY, SECURE_HTTP_HTTPS, API_KEY_AI
 
 app = FastAPI()
 logger = get_logger(__name__)
@@ -140,6 +141,28 @@ async def get_dialogs(dialog_id: int, user_id: int = Depends(get_current_user)):
     if result.get('success'):
         return {'server': 'ok', 'dialogs': result.get('service_message')}
     raise HTTPException(status_code=500, detail='Ошибка при обновление диалога')
+
+
+@app.get("/messages")
+async def get_messages(request: Request):
+    key = request.headers.get("X-Messages-Key")
+    if key != API_KEY_AI:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    result = await get_message_users_service()
+    if result.get('success'):
+        return result
+    raise HTTPException(status_code=500, detail='Ошибка при обновление сообщений')
+
+
+@app.post('/send/message/user')
+async def send_message(request: Request, data: DialogSchemaAIsend):
+    key = request.headers.get("X-Messages-Key")
+    if key != API_KEY_AI:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    result = await send_message_user_service(data.user_id, data.dialog_id, data.text_user)
+    if result.get('success'):
+        return {'server': 'ok', 'service_message': result.get('service_message')}
+    raise HTTPException(status_code=500, detail='Ошибка отправки сообщения')
 
 
 @app.get("/health")

@@ -1,5 +1,6 @@
+import asyncio
+
 from src.repository.repository import Database
-from src.ai.requests_ai import send_ai
 from src.utils.utils import get_logger
 from src.core.config import DATABASE_HOST, DATABASE_PORT, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD
 
@@ -61,29 +62,61 @@ async def get_user_dialogs_service(user_id: int) -> dict:
     return {'success': True, 'service_message': result}
 
 
-# отправка сообщения user -> AIorBd and AIorBD -> user
+# отправка сообщения user -> AI
 async def send_message_ai_service(user_id: int, dialog_id: int, text_user: str) -> dict:
     result_ownership = await db.check_dialog_ownership(user_id, dialog_id)
+
+    # проверка чужой ли диалог
     if result_ownership is False:
         logger.warning(f"Сообщение пользователя id:{user_id} в чужой диалог id:{dialog_id}")
         return {'success': False, 'service_message': 500}
+
+    # проверка на спам сообщения
+
+
+    # выставляем флаг для блокировки
     result_flag = await db.set_ai_response_flag(user_id, dialog_id, True)
     if result_flag is False:
         return {'success': False, 'service_message': 500}
+
+    # добавляем сообщение user
     result_user = await db.insert_message(user_id, dialog_id, text_user)
     if result_user is False:
         return {'success': False, 'service_message': 500}
-    response = await send_ai(dialog_id, text_user)
-    if response is False:
+
+    # цикл пока не появиться сообщение от Ai
+    while True:
+        result_answer = await db.get_ai_response_flag(user_id, dialog_id)
+        if result_answer is None:
+            return {'success': False, 'service_message': 500}
+        if result_answer is False:
+            # читаем сообщение бд
+            message_ai = await db.read_ai_message(1, dialog_id)
+            if message_ai is False:
+                return {'success': False, 'service_message': 500}
+            return {'success': True, 'service_message': message_ai.get("content")}
+        await asyncio.sleep(1)
+
+
+# получения сообщения users
+async def get_message_users_service() -> dict:
+    result = await db.read_user_message()
+    if result is False:
         return {'success': False, 'service_message': 500}
+    return {'success': True, 'service_message': result}
+
+
+# запись ответа AI в бд, установка флага.
+async def send_message_user_service(user_id: int, dialog_id: int, content: str) -> dict:
+    # запись в бд сообщения AI
+    result = await db.insert_message(1, dialog_id, content)
+    if result is False:
+        return {'success': False, 'service_message': 500}
+    # разблокировали флаг
     result_flag = await db.set_ai_response_flag(user_id, dialog_id, False)
     if result_flag is False:
         return {'success': False, 'service_message': 500}
-    result_ai = await db.insert_message(1, dialog_id, response[dialog_id])
-    if result_ai is False:
-        return {'success': False, 'service_message': 500}
-
-    return {'success': True, 'service_message': response[dialog_id]}
+    return {'success': True, 'service_message': 'Сообщение записано'}
 
 
 # вернуть весь контекст беседы user и AI

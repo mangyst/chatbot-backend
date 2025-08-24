@@ -15,6 +15,11 @@ services:
       timeout: 10s
       retries: 3
       start_period: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "25k"
+        max-file: "1"
 
   frontend:
     image: chatbot-frontend:latest
@@ -30,6 +35,11 @@ services:
       timeout: 10s
       retries: 3
       start_period: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "25k"
+        max-file: "1"
 
   nginx:
     image: chatbot-nginx:latest
@@ -44,3 +54,8 @@ services:
     depends_on:
       - frontend
       - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "25k"
+        max-file: "1"
