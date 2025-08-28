@@ -1,13 +1,9 @@
-# Виртуальные окружения
 venv/
 env/
 .venv/
 .env
 
-
-# Конфиги IDE
 .idea/
 
-# Кэш Python
 __pycache__/
 *.pyc
