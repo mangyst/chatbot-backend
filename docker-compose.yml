@@ -49,8 +49,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - /etc/letsencrypt/live/deepbottuan.duckdns.org/fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
-      - /etc/letsencrypt/live/deepbottuan.duckdns.org/privkey.pem:/etc/ssl/private/privkey.pem:ro
+      - /etc/letsencrypt/live/<your-domain>/fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
+      - /etc/letsencrypt/live/<your-domain>/privkey.pem:/etc/ssl/private/privkey.pem:ro
     depends_on:
       - frontend
       - backend
