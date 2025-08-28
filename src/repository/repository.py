@@ -319,7 +319,3 @@ class Database:
             except SQLAlchemyError as e:
                 self.logger.error(f"Ошибка AI не получила диалоги")
                 return False
-
-    # Проверка на сообщения
-    async def check_messages(self, user_id: int, dialog_id: int):
-        ...

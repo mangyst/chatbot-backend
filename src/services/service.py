@@ -49,7 +49,7 @@ async def init_user_dialog_service(user_id: int, dialog_name: str) -> dict:
 async def delete_user_dialog_service(user_id: int, dialog_id: int) -> dict:
     result = await db.delete_dialog(user_id, dialog_id)
     if result is False:
-        return {'success': False, 'service_message': 'Ошибка удаления диалога'}
+        return {'success': False, 'service_message': 500}
     if result:
         return {'success': True, 'service_message': 'Диалог удалён'}
 
@@ -58,7 +58,7 @@ async def delete_user_dialog_service(user_id: int, dialog_id: int) -> dict:
 async def get_user_dialogs_service(user_id: int) -> dict:
     result = await db.get_dialogs(user_id)
     if result is False:
-        return {'success': False, 'service_message': 'Ошибка запроса списка диалогов'}
+        return {'success': False, 'service_message': 500}
     return {'success': True, 'service_message': result}
 
 
@@ -69,10 +69,12 @@ async def send_message_ai_service(user_id: int, dialog_id: int, text_user: str) 
     # проверка чужой ли диалог
     if result_ownership is False:
         logger.warning(f"Сообщение пользователя id:{user_id} в чужой диалог id:{dialog_id}")
-        return {'success': False, 'service_message': 500}
+        return {'success': False, 'service_message': 403}
 
     # проверка на спам сообщения
-
+    result_flag_check = await get_ai_response_flag_service(user_id, dialog_id)
+    if result_flag_check.get('success') and result_flag_check.get('service_message'):
+        return {'success': False, 'service_message': 409}
 
     # выставляем флаг для блокировки
     result_flag = await db.set_ai_response_flag(user_id, dialog_id, True)
@@ -106,7 +108,7 @@ async def get_message_users_service() -> dict:
     return {'success': True, 'service_message': result}
 
 
-# запись ответа AI в бд, установка флага.
+# запись ответа AI в бд, установка флага
 async def send_message_user_service(user_id: int, dialog_id: int, content: str) -> dict:
     # запись в бд сообщения AI
     result = await db.insert_message(1, dialog_id, content)
@@ -126,7 +128,7 @@ async def get_context_dialog_service(user_id: int, dialog_id: int) -> dict:
         return {'success': False, 'service_message': 500}
     result = await db.get_dialog(user_id, dialog_id)
     if result is False:
-        return {'success': False, 'service_message': 'Ошибка отправки диалога'}
+        return {'success': False, 'service_message': 500}
     return {'success': True, 'service_message': result}
 
 
@@ -151,5 +153,7 @@ async def get_ai_response_flag_service(user_id: int, dialog_id: int) -> dict:
     result = await db.get_ai_response_flag(user_id, dialog_id)
     if result is None:
         return {'success': False, 'service_message': 500}
+    await asyncio.sleep(1)
     return {'success': True, 'service_message': result}
+
 
