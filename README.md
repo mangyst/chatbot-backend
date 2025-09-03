@@ -96,4 +96,104 @@ docker run -d -p 8000:8000 --env-file .env chatbot-backend
 
 # через Docker Compose (с фронтом и nginx)
 docker compose up -d
+```
+
+---
+
+## 📑 Env Examples
+
+### `.env.example`
+```env
+# === Database (local) ===
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_NAME=appdb
+DATABASE_USER=app
+DATABASE_PASSWORD=change-me
+
+# === Backend access for AI ===
+API_KEY_AI=dev-change-me
+
+# === JWT / Security ===
+SECRET_KEY_JWT=dev-change-me
+ALGORITHM=HS256
+
+# === Frontend origin (local) ===
+ADDRESS_FRONT=http://localhost:5173
+
+# === Google OAuth (local) ===
+GOOGLE_CLIENT_ID=your-dev-google-client-id.apps.googleusercontent.com
+
+# === Cookies over HTTPS (local) ===
+SECURE_HTTP_HTTPS=false
+
+# === Health key (local) ===
+HEALTH_SECRET_KEY=dev-health-key
+```
+
+---
+
+## 📑 Env Examples Production
+
+### `.env.production.example`
+```env
+# === Database (prod) ===
+DATABASE_HOST=postgres
+DATABASE_PORT=5432
+DATABASE_NAME=appdb
+DATABASE_USER=app
+DATABASE_PASSWORD=change-me-strong
+
+# === Backend access for AI ===
+API_KEY_AI=prod-change-me
+
+# === JWT / Security ===
+SECRET_KEY_JWT=really-strong-secret
+ALGORITHM=HS256
+
+# === Frontend origin (prod) ===
+ADDRESS_FRONT=https://your-frontend.example.com
+
+# === Google OAuth (prod) ===
+GOOGLE_CLIENT_ID=your-prod-google-client-id.apps.googleusercontent.com
+
+# === Cookies over HTTPS (prod) ===
+SECURE_HTTP_HTTPS=true
+
+# === Health key (prod) ===
+HEALTH_SECRET_KEY=prod-health-key
+```
+
+---
+
+## 🗄️ Database Schema
+``` SQL
+CREATE TABLE users (
+  user_id BIGSERIAL PRIMARY KEY,
+  mail TEXT NOT NULL,
+  google_id TEXT NOT NULL UNIQUE,
+  given_name TEXT,
+  family_name TEXT,
+  picture TEXT
+);
+
+CREATE TABLE dialogs (
+  dialog_id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+  dialog_name VARCHAR(20) NOT NULL,
+  status_flag BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE messages (
+  message_id BIGSERIAL PRIMARY KEY,
+  dialog_id BIGINT NOT NULL REFERENCES dialogs(dialog_id) ON DELETE CASCADE,
+  user_id BIGINT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+```
+⚠️ Бот в системе = user_id=1.
+
+---
+
 
