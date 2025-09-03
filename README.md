@@ -95,5 +95,5 @@ docker build -t chatbot-backend .
 docker run -d -p 8000:8000 --env-file .env chatbot-backend
 
 # через Docker Compose (с фронтом и nginx)
-docker compose up```
+docker compose up -d
 
