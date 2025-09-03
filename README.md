@@ -82,6 +82,7 @@
 
 ## 📂 Структура проекта
 
+```
 ├─ src/
 │ ├─ api/ # эндпоинты (auth, dialogs, messages, health)
 │ ├─ core/ # config.py (env), security.py (JWT)
@@ -93,6 +94,7 @@
 ├─ requirements.txt
 ├─ Dockerfile
 └─ docker-compose.yml
+```
 
 ---
 
