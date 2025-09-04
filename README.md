@@ -93,6 +93,7 @@
 │ ├─ services/ # бизнес-логика (лимиты, флаги, ожидание AI)
 │ ├─ utils/ # логирование
 │ └─ main.py
+├─ .env.example # переменные окружения
 ├─ requirements.txt
 ├─ Dockerfile
 └─ docker-compose.yml
