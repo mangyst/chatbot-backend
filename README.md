@@ -272,6 +272,7 @@ Cookie передаются кросс-доменно (allow_credentials=True).
 - backend — FastAPI API
 - frontend — клиентское SPA
 - nginx — реверс-прокси с SSL
+
 После старта:
 - API: http://localhost:8000
 - Swagger: http://localhost:8000/docs
