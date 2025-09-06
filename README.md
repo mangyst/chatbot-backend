@@ -94,7 +94,7 @@
 ├─ src/
 │ ├─ api/ # эндпоинты (auth, dialogs, messages, health)
 │ ├─ core/ # config.py (env), security.py (JWT)
-│ ├─ models/ # Pydantic-схемы
+│ ├─ schemas/ # Pydantic-схемы
 │ ├─ repository/ # слой работы с БД
 │ ├─ services/ # бизнес-логика (лимиты, флаги, ожидание AI)
 │ ├─ utils/ # логирование
