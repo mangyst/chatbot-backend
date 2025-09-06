@@ -14,7 +14,6 @@
 - 🛠️ Контейнеризация через **Docker / Docker Compose**
 - ☁️ Работает в связке с **Frontend** и **Nginx**
   - **Frontend**: https://github.com/mangyst/chatbot-front
-  - **Nginx**: https://github.com/mangyst
 
 ---
 
