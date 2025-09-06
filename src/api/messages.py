@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, Request
 from src.core.security import get_current_user
 from src.services.service import get_message_users_service, send_message_user_service, send_message_ai_service
-from src.models.models import DialogSchemaAIsend, UserDialogMessage
+from src.schemas.schemas import DialogSchemaAIsend, UserDialogMessage
 from src.core.config import API_KEY_AI
 
 

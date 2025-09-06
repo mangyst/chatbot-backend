@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from src.core.security import get_current_user
-from src.models.models import DialogSchema, DialogNameSchema, DialogSchemaRename
+from src.schemas.schemas import DialogSchema, DialogNameSchema, DialogSchemaRename
 from src.services.service import (
     init_user_dialog_service, delete_user_dialog_service, get_user_dialogs_service,
     get_context_dialog_service, update_user_name_chat_service, get_ai_response_flag_service,
@@ -29,7 +29,7 @@ async def delete_dialog(dialog: DialogSchema, user_id: int = Depends(get_current
 
 
 @router.post('/rename')
-async def delete_dialog(dialog: DialogSchemaRename, user_id: int = Depends(get_current_user)):
+async def delete_dialog(dialog: DialogNameSchema, user_id: int = Depends(get_current_user)):
     result = await update_user_name_chat_service(user_id, dialog.dialog_id, dialog.dialog_name)
     if result.get('success'):
         return {'server': 'ok', 'status': result.get('service_message')}

@@ -14,10 +14,6 @@ class UserDialogMessage(BaseModel):
     text_user: constr(min_length=1, max_length=2000)
 
 
-class DialogSchemaRename(DialogSchema):
-    dialog_name: constr(min_length=3, max_length=20)
-
-
 class DialogSchemaAIsend(BaseModel):
     user_id: int
     dialog_id: int
